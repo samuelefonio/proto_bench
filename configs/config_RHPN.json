@@ -1,0 +1,31 @@
+{
+    "device": "cuda:1",
+    "dataset": "cifar10",
+    "method": "HMGP",
+    "geometry": "hyperbolic",
+    "grad": true,
+    "validation": false,
+    "distortion": true,
+    "lam": 0.5,
+    "output_dim": 8,
+    "batch_size": 128,
+    "epochs": 200,
+    "model": "resnet18",
+    "temperature": 0.1,
+    "proto_lr": 1e-3,
+    "curvature": 1,
+    "clipping": 1,
+    "th":0,
+    "num_proto":1,
+    "optimizer": {
+        "name": "sgd",
+        "learning_rate": 1e-1,
+        "weight_decay": 1e-3,
+        "momentum": 0.9
+    },
+    "lr_scheduler": {
+        "steps": [60, 140, 160], 
+        "entity": 0.2
+    }
+    
+}
