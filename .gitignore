@@ -177,3 +177,5 @@ data/
 results/
 wandb/
 logs/
+.DS_Store
+./configs/.DS_Store/

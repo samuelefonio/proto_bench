@@ -66,15 +66,6 @@ def hyperspherical_embedding(dataset, device, embedding_dimension, seed):
         mapping.div_(torch.norm(mapping, dim=1, keepdim=True))
     return mapping.detach()
 
-
-class HPS_loss(nn.Module):
-    def __init__(self, prototypes):
-        super(HPS_loss, self).__init__()
-        self.prototypes = prototypes
-
-    def forward(self, output, target):
-        dist = (1 - nn.CosineSimilarity(eps=1e-9)(output, self.prototypes[target])).pow(2).sum()
-        return dist
     
 
 def load_cost_matrix(dataset_name):
@@ -101,16 +92,36 @@ def load_optimizer(params, *args):
         optimizer = geoopt.optim.RiemannianAdam(params, lr=learning_rate, weight_decay=decay)
     return optimizer
 
-def clip(input_vector, r):
-    input_norm = torch.norm(input_vector, dim = -1)
-    clip_value = float(r)/input_norm 
-    min_norm = torch.clamp(float(r)/input_norm, max = 1)
-    return min_norm[:, None] * input_vector
 
-def prediction(method, output, prototypes):
-    if method in ['HPS']:
-        output = nn.CosineSimilarity(dim=-1)(output[:,None,:], prototypes[None,:,:])
-        pred = output.max(-1, keepdim=True)[1]
-    elif method in ['CHPS','RHPN','MGP','XE']:
-        pred = output.max(-1, keepdim=True)[1]
-    return pred
+class Manifold(nn.Module):
+    def __init__(self, geometry):
+        super(Manifold, self).__init__()
+        self.geometry = geometry
+        if geometry == 'poincare':
+            self.manifold = geoopt.PoincareBallExact(c=1, learnable = False)
+        if geometry == 'lorentz':
+            self.manifold = geoopt.Lorentz()
+        elif geometry == 'hyperspherical':
+            self.manifold = geoopt.Sphere()
+        elif geometry == 'euclidean':
+            self.manifold = geoopt.Euclidean()
+
+    def project(self, x):
+        if self.geometry == 'euclidean':
+            return x
+        elif self.geometry in ['poincare', 'lorentz']:
+            return self.manifold.expmap0(x)
+        elif self.geometry == 'hyperspherical':
+            return self.manifold.projx(x)
+        
+    def distance(self, x, p):
+        """
+        This function returns the distance between each x and each p.
+        """
+        if self.geometry == 'euclidean':
+            return -torch.norm(x[:, None, :] - p[None, :, :], dim=-1)
+        elif self.geometry in ['poincare', 'lorentz']:
+            return -self.manifold.dist(x[:, None, :], p[None, :, :])
+        elif self.geometry == 'hyperspherical':
+            return -(1 - nn.CosineSimilarity(dim=-1)(x[:, None, :], p[None, :, :]))     
+     
