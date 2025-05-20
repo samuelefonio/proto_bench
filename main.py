@@ -11,6 +11,7 @@ import json
 from models import *
 import copy
 from log import initialize_logger_from_config
+from utils_metrics import *
 
 def main_train(model:torch.nn.Module, 
                trainloader:data.DataLoader, 
@@ -33,7 +34,7 @@ def main_train(model:torch.nn.Module,
         
         opt.zero_grad()
         
-        distances, embeddings = model(x, y)
+        distances, embeddings = model(x)
         
         loss = criterion(distances, y) 
         
@@ -81,7 +82,7 @@ def main_test(model: torch.nn.Module, testloader:data.DataLoader, device:torch.d
             y = y.squeeze()
             true_labels.append(y)
 
-            distances, _ = model(data, y)
+            distances, _ = model(data)
 
             pred = distances.max(-1, keepdim=True)[1]
             pred = pred.squeeze().to(device)
@@ -135,13 +136,17 @@ if __name__ == "__main__":
 
     logger.log(config)
 
-    trainloader, testloader = load_dataset(config['dataset'], config['batch_size'], num_workers = 8, val= config['validation'])
+    trainloader, testloader, validloader = load_dataset(config['dataset']['name'], 
+                                           config['batch_size'], 
+                                           num_workers = 4, 
+                                           reduced = config['dataset']['reduced'],
+                                           ex_4_class = config['dataset']['ex_4_class'],)
 
-    model = load_backbone(config['model'], config['output_dim']) 
+    model = load_backbone(config) 
     model = metric_model(model, device = config['device'], 
                          output_dim = config['output_dim'], 
                          temperature = config['temperature'], 
-                         dataset = config['dataset'], 
+                         dataset = config['dataset']['name'], 
                          geometry = config['geometry']
                          )
     model = model.to(config['device'])
@@ -154,16 +159,17 @@ if __name__ == "__main__":
 
     prototype_dict = {i:0 for i in range(config['epochs'])}
     
-    checkpoint_epoch = 0
+    early_stopping = 0
+    best_valid_acc = 0
     previous_parametric_proto = copy.deepcopy(model.parametric_prototypes.data)
     distance_with_previous_epoch_parametric_prototype = torch.tensor(0)
-    for epoch in range(checkpoint_epoch, config['epochs']):
+    for epoch in range(config['epochs']):
         t0 = time.time()
         with torch.no_grad():
         
             if epoch >= 1:
                 distance_with_previous_epoch_parametric_prototype = torch.mean(model.manifold.manifold.dist(model.parametric_prototypes.data, previous_parametric_proto))
-                cosine_distance_among_param_prototypes= torch.mean(nn.CosineSimilarity(dim=-1)(model.parametric_prototypes.data[:, None, :], model.parametric_prototypes.data[None, :, :]))
+                cosine_distance_among_param_prototypes = torch.mean(nn.CosineSimilarity(dim=-1)(model.parametric_prototypes.data[:, None, :], model.parametric_prototypes.data[None, :, :]))
                 
                 stats = {
                         "step": epoch,
@@ -192,24 +198,48 @@ if __name__ == "__main__":
                  "loss": loss_calculated}
         logger(stats)
 
-        if epoch%config['eval_every'] == 0 or epoch == config['epochs']-1 :
-            test_prediction, test_tl, test_acc, test_f1, test_recall = main_test(model=model, testloader=testloader, device = config['device'])
-            logger({"step": epoch, 
-                    "valid_acc": test_acc,
-                    "valid_f1": test_f1,
-                    "valid_recall": test_recall,})        
+        val_prediction, val_tl, val_acc, val_f1, val_recall = main_test(model=model, testloader=validloader, device = config['device'])
+        logger({"step": epoch, 
+                "valid_acc": val_acc,
+                "valid_f1": val_f1,
+                "valid_recall": val_recall,}) 
         
-        if config['save_model']:
+        if val_acc>best_valid_acc:
             torch.save({
-                'epoch': epoch,
-                'model_state_dict': final_model.state_dict(),
-                'optimizer_state_dict': opt.state_dict(),
-                },  logger.results_directory + logger.name + '_model.pt')
+                    'epoch': epoch,
+                    'model_state_dict': final_model.state_dict(),
+                    'optimizer_state_dict': opt.state_dict(),
+                    },  logger.results_directory + logger.name + '_model.pt')
+            best_valid_acc = val_acc
+        else:
+            early_stopping+=1
+
+        if early_stopping > config['patience']:
+            logger('Early stopping')
+            break       
     
+    model.load_state_dict(torch.load(logger.results_directory + logger.name + '_model.pt')['model_state_dict'])
+    test_prediction, test_tl, test_acc, test_f1, test_recall = main_test(model=model, testloader=testloader, device = config['device'])
     logger({"step": epoch, 
             "total_time": time.time() - total_start_time, 
-            "test_acc": test_acc})
-           
+            "test_acc": test_acc,
+            "test_f1": test_f1,
+            "test_recall": test_recall})
+    
+    # TODO: log the results on robustness and on OOD detection
+
+    test_FGSM, test_PGD = get_robustness(testloader, model, config)
+    for i in range(len(test_FGSM)):
+        logger({"step": i, 
+                "test_FGSM_eps": test_FGSM[i],
+                "test_PGD_eps": test_PGD[i]})
+        
+    results_OOD = get_OOD(model, config)
+    for key, value in results_OOD.items():
+        logger({"step": 1, 
+                f"confidence_{config['dataset']['name']}_on_{key}": value[0],
+                f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
+
     np.save(logger.results_directory+logger.name+'.npy', test_prediction.cpu().numpy())
     np.save(logger.results_directory+logger.name+'_tl.npy', test_tl.cpu().numpy())
     with open(logger.results_directory+logger.name+'_param_proto'+'.pkl', "wb") as pickle_file:

@@ -54,7 +54,7 @@ class metric_model(nn.Module):
         self.prototypes = self.parametric_prototypes
         self.counter = torch.zeros(DATASETS_CLASSES[self.dataset])
 
-    def forward(self, images, y):
+    def forward(self, images):
         embeddings = self.model(images)
         embeddings = self.manifold.project(embeddings)
         
@@ -66,7 +66,7 @@ class metric_model(nn.Module):
             print('')
         dists = self.manifold.distance(embeddings, self.prototypes)
 
-        return dists/self.temperature, embeddings
+        return -dists/self.temperature, embeddings
     
     @torch.no_grad()
     def calculate_centroid_prototypes(self, embeddings: torch.tensor, y:torch.tensor):
@@ -86,14 +86,23 @@ class metric_model(nn.Module):
         self.counter[represented_classes] = self.counter[represented_classes] + 1
         
 
-def load_backbone(model, output_dim):
+def load_backbone(config):
+    model = config['model']
     modello = model.lower()
     if modello == 'simplecnn':
-        out_model = SimpleCNN(output_dim = output_dim)
+        out_model = SimpleCNN(output_dim = config['output_dim'])
     elif modello == 'resnet18':
-        out_model = resnet.resnet18()           
-        num_ftrs = out_model.fc.in_features
-        out_model.fc = nn.Linear(num_ftrs, output_dim)
+        if config['dataset']['name'] in ['cifar10', 'cifar100']: 
+            out_model = resnet.resnet18()           
+            num_ftrs = out_model.fc.in_features
+            out_model.fc = nn.Linear(num_ftrs, config['output_dim'])
+        else:
+            if config['dataset']['reduced']:
+                out_model = torchmodel.resnet18(weights='DEFAULT', progress=True)
+            else:
+                out_model = torchmodel.resnet18()
+            num_ftrs = out_model.fc.in_features
+            out_model.fc = nn.Linear(num_ftrs, config['output_dim'])
     else:
         raise Exception('Selected dataset is not available.')
 

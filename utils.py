@@ -119,9 +119,9 @@ class Manifold(nn.Module):
         This function returns the distance between each x and each p.
         """
         if self.geometry == 'euclidean':
-            return -torch.norm(x[:, None, :] - p[None, :, :], dim=-1)
+            return torch.norm(x[:, None, :] - p[None, :, :], dim=-1)
         elif self.geometry in ['poincare', 'lorentz']:
-            return -self.manifold.dist(x[:, None, :], p[None, :, :])
+            return self.manifold.dist(x[:, None, :], p[None, :, :])
         elif self.geometry == 'hyperspherical':
-            return -(1 - nn.CosineSimilarity(dim=-1)(x[:, None, :], p[None, :, :]))     
+            return (1 - nn.CosineSimilarity(dim=-1)(x[:, None, :], p[None, :, :]))     
      

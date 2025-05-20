@@ -6,25 +6,40 @@ from torchvision import datasets, transforms
 import numpy as np
 import torch
 
-def load_dataset(dataset_name, batch_size, num_workers=0, val=False):
+DATASET_N_CLASSES = {
+    'mnist': 10,
+    'cifar10': 10,
+    'cifar100': 100,
+    'cub': 200,
+    'aircraft': 100,
+    'cars': 196
+}
+
+
+def load_dataset(dataset_name:str, 
+                 batch_size:int, 
+                 num_workers:int = 0, 
+                 val:bool = False, 
+                 reduced:bool = False, 
+                 ex_4_class:int = None):
     dataset_name = dataset_name.lower()
     print(f'loading the {dataset_name} dataset')
     if dataset_name == 'cifar100':
-        return load_cifar100(batch_size, num_workers, val)
+        return load_cifar100(batch_size, num_workers, reduced, ex_4_class)
     elif dataset_name == 'cifar10':
-        return load_cifar10(batch_size, num_workers, val)
+        return load_cifar10(batch_size, num_workers, reduced, ex_4_class)
     elif dataset_name == "mnist":
-        return load_MNIST(batch_size, num_workers, val)
+        return load_MNIST(batch_size, num_workers, reduced, ex_4_class)
     elif dataset_name == "cub":
-        return load_cub(batch_size, num_workers, val)
+        return load_cub(batch_size, num_workers, reduced, ex_4_class)
     elif dataset_name == "cars":
-        return load_cars(batch_size, num_workers, val)
+        return load_cars(batch_size, num_workers, reduced, ex_4_class)
     elif dataset_name == "aircraft":
-        return load_aircraft(batch_size, num_workers, val)
+        return load_aircraft(batch_size, num_workers, reduced, ex_4_class)
     else:
         raise Exception('Selected dataset is not available.')
 
-def load_cifar100(batch_size, num_workers, val=False):
+def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=None):
 
     mrgb = [0.507, 0.487, 0.441]
     srgb = [0.267, 0.256, 0.276]
@@ -43,23 +58,36 @@ def load_cifar100(batch_size, num_workers, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.20
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.1
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices[:100])
+    train = torch.utils.data.Subset(train, train_indices[:100])
+    test = torch.utils.data.Subset(test, np.arange(1000)[:100])
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
+    
+    
+    return trainloader, testloader, validloader
 
-def load_cub(batch_size, num_workers, val=False):
+def load_cub(batch_size, num_workers, reduced=False, ex_4_class=None):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -80,23 +108,35 @@ def load_cub(batch_size, num_workers, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.20
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.1
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
+    
+    return trainloader, testloader, validloader
+    
 
-def load_aircraft(batch_size, num_workers, val=False):
+def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=None):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -119,23 +159,35 @@ def load_aircraft(batch_size, num_workers, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.20
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.1
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
+    
+    return trainloader, testloader, validloader
+    
 
-def load_cars(batch_size, num_workers, val=False):
+def load_cars(batch_size, num_workers, reduced=False, ex_4_class=None):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -156,23 +208,35 @@ def load_cars(batch_size, num_workers, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.20
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.1
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
     
-def load_MNIST(batch_size, num_workers=0, val=False):
+    return trainloader, testloader, validloader
+    
+    
+def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=None):
 
     transform_train = transforms.Compose([
         transforms.RandomAffine(degrees=40, scale=(1.3,1.3)), 
@@ -190,23 +254,35 @@ def load_MNIST(batch_size, num_workers=0, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.01
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.01
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
+    
+    return trainloader, testloader, validloader
+    
 
-def load_cifar10(batch_size, num_workers=0, val=False):
+def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=None):
     transform_train = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
@@ -224,18 +300,30 @@ def load_cifar10(batch_size, num_workers=0, val=False):
     num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
-    if val:
-        valid_size = 0.20
-        split = int(np.floor(valid_size * num_train))
-        train_indices, valid_indices = indices[split:], indices[:split]
-        validation = torch.utils.data.Subset(train, valid_indices)
-        train = torch.utils.data.Subset(train, train_indices)
-        validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
+    valid_size = 0.1
+    split = int(np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[split:], indices[:split]
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    
+    if reduced and ex_4_class is not None:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
+        indices = list(range(num_train))
+        np.random.shuffle(indices)
+        reduced_indices = []
+        for idx in indices:
+            label = train[idx][1]  
+            if class_counts[label] < ex_4_class:
+                reduced_indices.append(idx)
+                class_counts[label] += 1
+            if all(count >= ex_4_class for count in class_counts.values()):
+                break
+        train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    if val: 
-        return trainloader, testloader, validloader
-    else:
-        return trainloader, testloader
+    
+    return trainloader, testloader, validloader
+    

@@ -1,17 +1,18 @@
 device: "cpu"
-dataset: "mnist"
-validation: false
+dataset: 
+    name: "cifar100"
+    reduced: false
+    ex_4_class: None
 output_dim: 8
 batch_size: 128
-epochs: 20
+epochs: 1
 seed: 0
-model: "simplecnn"
-save_model: false
-eval_every: 5
+model: "resnet18"
 temperature: 1.0
-geometry: "hyperspherical"
+geometry: "euclidean"
+patience: 5
 optimizer:
-    name: "rsgd"
+    name: "sgd"
     learning_rate: 0.1
     weight_decay: 0.0001
     momentum: 0.9
@@ -21,8 +22,8 @@ lr_scheduler:
         - 18
     entity: 0.2
 logger:
-    type: "Local"
-    // type: "Wandb"
-    // wandb_args:
-    //     project: "proto_bench"
-    //     entity: "mlgroup"
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "mlgroup"

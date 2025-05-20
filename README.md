@@ -19,7 +19,7 @@ The configuration files in configs allow for easy and immediate reproducibility.
 
 Once the dataset is downloaded, the command to run an experiment is:
 ```
-python main.py -config configs/config.json -device cpu
+python main.py -config configs/config.yaml -device cpu
 ```
 
 ## quick guide
@@ -37,16 +37,32 @@ Per quanto riguarda geometrie, metriche eccetera, si puo' fare riferimento a met
 
 DETTO CIO: Se vuoi usare questi tool topperia, consiglio probabilmente se vogliamo poi giocare con protopnet eccetera di implementarle in un altro file e creaare un main_protopnet.py dove avviene cio' che deve avvenire. Secondo me figo. Have fun!
 
-## Sam TO DO:
-New metrics:
-- [] AHC
-- [] Robustness
-- [] OOD Detection
+# TODO:
+Metrics:
+- [ ] AHC
+- [X] Robustness
+- [X] OOD Detection
 
 New settings:
-- [] few-shot-learning
-- [] small datasets
+- [X] small datasets
+- [ ] ProtoPnet
 
-Possible alternatives:
-- [] add hierarchical information
-- [] implementing Euclidean Entailment Cones
+New loss functions:
+In the paper of parametric prototypes there are different loss functions to be tested. 
+They concluded that the distance-based cross entropy loss (the one implemented) is the best.
+However, maybe it is also interesting to implement the others in our case. 
+I think this might strghten the paper justification, since we are emulating also the other metrics,
+but we can discuss about this.
+
+Tuning of the temperature:
+Important! The temperature parameter has shown to be important in many situations. We shhould perform an ablation study on this parameter and put in the final table the best result for each geometry (and dataset of course).
+
+
+Experiments:
+Resnet18, 3 seeds, if small datasets --> pre-trained (No idea on the hyperparameters)
+Cifar10: [ ][ ][ ]
+Cifar100: [ ][ ][ ]
+Aircraft: [ ][ ][ ]
+CUB: [ ][ ][ ]
+Cars: [ ][ ][ ]
+

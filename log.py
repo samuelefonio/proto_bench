@@ -53,7 +53,7 @@ class Logger:
 
     def __call__(self, stats: Dict[str, float]):
         """Logs the statistics both to the console and file."""
-        message = " | ".join(f"{key}: {value}" for key, value in stats.items())
+        message = " | ".join(f"{key}: {round(value,3)}" for key, value in stats.items())
         self.logger.info(message)
     
     def finish(self):
