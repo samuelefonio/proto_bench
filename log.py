@@ -4,7 +4,7 @@ import wandb
 import os
 import json
 import hashlib
-
+from typing import Dict, Union
 
 def generate_config_hash(config: dict) -> str:
     """Generates a unique hash for a given configuration dictionary."""
@@ -13,15 +13,15 @@ def generate_config_hash(config: dict) -> str:
 
 
 class Logger:
-    def __init__(self, name: str, logs_directory: str = './logs/', results_directory: str = './results/'):
+    def __init__(self, name: str, exp_directory: str = './exp/'):
         self.logger = logging.getLogger(name)
         self.name = name
-        log_file_path = os.path.join(logs_directory, f"{name}.log")
+        log_file_path = os.path.join(exp_directory, f"{name}.log")
 
         if os.path.exists(log_file_path):
             print(f"Logger with configuration {self.name} already exists. Reusing it.")
-        self.logs_directory = logs_directory
-        self.results_directory = results_directory
+        self.exp_directory = exp_directory
+        # self.results_directory = results_directory
         self._configure_local_logger(name)
         
     def _configure_local_logger(self, name: str):
@@ -32,7 +32,7 @@ class Logger:
         console_handler = logging.StreamHandler()
         
         # File handler
-        file_handler = logging.FileHandler(f"{self.logs_directory}{name}.log", mode='w', encoding="utf-8")
+        file_handler = logging.FileHandler(f"{self.exp_directory}{name}.log", mode='w', encoding="utf-8")
         
         # Formatter
         formatter = logging.Formatter(
@@ -60,8 +60,8 @@ class Logger:
         self.logger.info('finish')
 
 class WandbLogger(Logger):
-    def __init__(self, name: str, logs_directory: str, results_directory: str, **kwargs):
-        super().__init__(name, logs_directory, results_directory)
+    def __init__(self, name: str, exp_directory: str, **kwargs):
+        super().__init__(name, exp_directory)
         # self.project_name = project_name
         # Initialize the Wandb run
         wandb.init(name=name, **kwargs)
@@ -76,19 +76,15 @@ class WandbLogger(Logger):
         super().finish()
         wandb.finish()
 
-from typing import Dict, Union
-
-# Assuming Logger and WandbLogger classes are imported here
 
 def initialize_logger_from_config(config: dict) -> Union[Logger, WandbLogger]:
     
     logger_config = config.get("logger", {})
     logger_type = logger_config.get("type", "local").lower()
-    logs_directory = "./logs/"
-    results_directory = "./results/"
-    os.makedirs(logs_directory, exist_ok=True)
-    os.makedirs(results_directory, exist_ok=True)
-
+    exp_directory = f"results/{config['dataset']['name']}/{config['seed']}/"
+    
+    os.makedirs(exp_directory, exist_ok=True)
+    
     # Generate a unique hash for the logger configuration
     config_hash = generate_config_hash(config)
     name = f"{config_hash}"
@@ -104,6 +100,6 @@ def initialize_logger_from_config(config: dict) -> Union[Logger, WandbLogger]:
         # Filter out any None values in kwargs
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         
-        return WandbLogger(name=name, logs_directory=logs_directory, results_directory=results_directory, **kwargs)
+        return WandbLogger(name=name, exp_directory=exp_directory, **kwargs)
     else:
-        return Logger(name=name, logs_directory=logs_directory, results_directory=results_directory)
+        return Logger(name=name, exp_directory=exp_directory)

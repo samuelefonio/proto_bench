@@ -62,18 +62,16 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=None):
     valid_size = 0.1
     split = int(np.floor(valid_size * num_train))
     train_indices, valid_indices = indices[split:], indices[:split]
-    validation = torch.utils.data.Subset(train, valid_indices[:100])
-    train = torch.utils.data.Subset(train, train_indices[:100])
-    test = torch.utils.data.Subset(test, np.arange(1000)[:100])
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    # test = torch.utils.data.Subset(test, np.arange(1000)[:100])
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
@@ -116,13 +114,11 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=None):
     train = torch.utils.data.Subset(train, train_indices)
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
@@ -167,13 +163,11 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=None):
     train = torch.utils.data.Subset(train, train_indices)
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
@@ -216,13 +210,11 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=None):
     train = torch.utils.data.Subset(train, train_indices)
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
@@ -255,20 +247,18 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=None):
     indices = list(range(num_train))
     np.random.shuffle(indices)
     
-    valid_size = 0.01
-    split = int(np.floor(valid_size * num_train))
-    train_indices, valid_indices = indices[split:], indices[:split]
+    valid_size = 0.1
+    split = int(num_train - np.floor(valid_size * num_train))
+    train_indices, valid_indices = indices[:split], indices[split:]
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
@@ -308,13 +298,11 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=None):
     train = torch.utils.data.Subset(train, train_indices)
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
-    if reduced and ex_4_class is not None:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
-        indices = list(range(num_train))
-        np.random.shuffle(indices)
+    if reduced:
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in indices:
-            label = train[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1

@@ -59,10 +59,14 @@ Important! The temperature parameter has shown to be important in many situation
 
 
 Experiments:
-Resnet18, 3 seeds, if small datasets --> pre-trained (No idea on the hyperparameters)
-Cifar10: [ ][ ][ ]
-Cifar100: [ ][ ][ ]
-Aircraft: [ ][ ][ ]
-CUB: [ ][ ][ ]
-Cars: [ ][ ][ ]
+- Resnet18 
+- 3 seeds
+- if small datasets --> pre-trained (No idea on the hyperparameters)
+
+Experiment table:
+| Seed | Cifar-10 | Cifar-100 | Aircraft | Cars | CUB |
+| ----- |-----|-----|-----|-----|-----|
+| 42    | Nan | Nan | Nan | Nan | Nan |
+| 117   | Nan | Nan | Nan | Nan | Nan |
+| 12345 | Nan | Nan | Nan | Nan | Nan |
 

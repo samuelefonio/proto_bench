@@ -1,13 +1,13 @@
 device: "cpu"
 dataset: 
-    name: "cifar100"
-    reduced: false
-    ex_4_class: None
+    name: "mnist"
+    reduced: true
+    ex_4_class: 5
 output_dim: 8
 batch_size: 128
 epochs: 1
-seed: 0
-model: "resnet18"
+seed: 42
+model: "simplecnn"
 temperature: 1.0
 geometry: "euclidean"
 patience: 5

@@ -115,7 +115,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="classification")
     parser.add_argument('-device',dest='device', default='cpu', type = str, help='device')
     parser.add_argument('-config',dest='config', default='configs/config.yaml', type = str, help='device')
-    parser.add_argument('-seed',dest='seed', default=0, type = int, help='ranking of the run')
+    parser.add_argument('-seed',dest='seed', default=42, type = int, help='ranking of the run')
+    parser.add_argument('-ex',dest='ex_4_class', default=0, type = int, help='Number of examples per class if in config the key reduced is True')
     args = parser.parse_args()
     return args
 
@@ -126,6 +127,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(yaml_file)
 
     config['seed'] = args.seed
+    config['ex_4_class'] = args.ex_4_class
         
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])
@@ -209,7 +211,7 @@ if __name__ == "__main__":
                     'epoch': epoch,
                     'model_state_dict': final_model.state_dict(),
                     'optimizer_state_dict': opt.state_dict(),
-                    },  logger.results_directory + logger.name + '_model.pt')
+                    },  logger.exp_directory + logger.name + '.pt')
             best_valid_acc = val_acc
         else:
             early_stopping+=1
@@ -218,7 +220,7 @@ if __name__ == "__main__":
             logger('Early stopping')
             break       
     
-    model.load_state_dict(torch.load(logger.results_directory + logger.name + '_model.pt')['model_state_dict'])
+    model.load_state_dict(torch.load(logger.exp_directory + logger.name + '.pt')['model_state_dict'])
     test_prediction, test_tl, test_acc, test_f1, test_recall = main_test(model=model, testloader=testloader, device = config['device'])
     logger({"step": epoch, 
             "total_time": time.time() - total_start_time, 
@@ -226,22 +228,20 @@ if __name__ == "__main__":
             "test_f1": test_f1,
             "test_recall": test_recall})
     
-    # TODO: log the results on robustness and on OOD detection
-
-    test_FGSM, test_PGD = get_robustness(testloader, model, config)
-    for i in range(len(test_FGSM)):
-        logger({"step": i, 
-                "test_FGSM_eps": test_FGSM[i],
-                "test_PGD_eps": test_PGD[i]})
+    # test_FGSM, test_PGD = get_robustness(testloader, model, config)
+    # for i in range(len(test_FGSM)):
+    #     logger({"step": i, 
+    #             "test_FGSM_eps": test_FGSM[i],
+    #             "test_PGD_eps": test_PGD[i]})
         
-    results_OOD = get_OOD(model, config)
-    for key, value in results_OOD.items():
-        logger({"step": 1, 
-                f"confidence_{config['dataset']['name']}_on_{key}": value[0],
-                f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
+    # results_OOD = get_OOD(model, config)
+    # for key, value in results_OOD.items():
+    #     logger({"step": 1, 
+    #             f"confidence_{config['dataset']['name']}_on_{key}": value[0],
+    #             f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
 
-    np.save(logger.results_directory+logger.name+'.npy', test_prediction.cpu().numpy())
-    np.save(logger.results_directory+logger.name+'_tl.npy', test_tl.cpu().numpy())
-    with open(logger.results_directory+logger.name+'_param_proto'+'.pkl', "wb") as pickle_file:
+    # np.save(logger.results_directory+logger.name+'.npy', test_prediction.cpu().numpy())
+    # np.save(logger.results_directory+logger.name+'_tl.npy', test_tl.cpu().numpy())
+    with open(logger.exp_directory+logger.name+'_proto'+'.pkl', "wb") as pickle_file:
         pkl.dump(prototype_dict, pickle_file)
     logger.finish()
