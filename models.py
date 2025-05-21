@@ -3,7 +3,7 @@ import torch
 import resnet
 import torchvision.models as torchmodel
 from utils import *
-import torch_scatter
+#import torch_scatter
 import copy
 
 DATASETS_CLASSES = {'mnist':10,
