@@ -21,7 +21,7 @@ def load_dataset(dataset_name:str,
                  num_workers:int = 0, 
                  val:bool = False, 
                  reduced:bool = False, 
-                 ex_4_class:int = None):
+                 ex_4_class:int = 0):
     dataset_name = dataset_name.lower()
     print(f'loading the {dataset_name} dataset')
     if dataset_name == 'cifar100':
@@ -39,7 +39,7 @@ def load_dataset(dataset_name:str,
     else:
         raise Exception('Selected dataset is not available.')
 
-def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=None):
+def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
 
     mrgb = [0.507, 0.487, 0.441]
     srgb = [0.267, 0.256, 0.276]
@@ -85,7 +85,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=None):
     
     return trainloader, testloader, validloader
 
-def load_cub(batch_size, num_workers, reduced=False, ex_4_class=None):
+def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -132,7 +132,7 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=None):
     return trainloader, testloader, validloader
     
 
-def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=None):
+def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -181,7 +181,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=None):
     return trainloader, testloader, validloader
     
 
-def load_cars(batch_size, num_workers, reduced=False, ex_4_class=None):
+def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
 
     transform_train = transforms.Compose([
     transforms.Resize((224,224)),
@@ -228,7 +228,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=None):
     return trainloader, testloader, validloader
     
     
-def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=None):
+def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
 
     transform_train = transforms.Compose([
         transforms.RandomAffine(degrees=40, scale=(1.3,1.3)), 
@@ -272,7 +272,7 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=None):
     return trainloader, testloader, validloader
     
 
-def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=None):
+def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     transform_train = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
