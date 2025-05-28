@@ -51,9 +51,12 @@ class Logger:
     def log(self, message):
         self.logger.info(message)
 
-    def __call__(self, stats: Dict[str, float]):
+    def __call__(self, stats: Dict[str, Union[int, float, str]]):
         """Logs the statistics both to the console and file."""
-        message = " | ".join(f"{key}: {round(value,3)}" for key, value in stats.items())
+        message = " | ".join(
+            f"{key}: {round(value, 3)}" if isinstance(value, (int, float)) else f"{key}: {value}"
+            for key, value in stats.items()
+        )
         self.logger.info(message)
     
     def finish(self):
@@ -66,10 +69,12 @@ class WandbLogger(Logger):
         # Initialize the Wandb run
         wandb.init(name=name, **kwargs)
         
-    def __call__(self, stats: Dict[str, float]):
-        """Logs statistics to both the local logger and Wandb."""
-        super().__call__(stats)  # Log to local logger
-        wandb.log(stats, step = stats['step'])         # Log to Wandb
+    def __call__(self, stats: Dict[str, Union[int, float, str]]):
+        super().__call__(stats)
+        if "step" in stats:
+            wandb.log(stats, step=stats["step"])
+        else:
+            wandb.log(stats)         # Log to Wandb
 
     def finish(self):
         """Ends the Wandb run."""
