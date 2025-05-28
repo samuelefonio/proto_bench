@@ -1,3 +1,4 @@
+from typing import Tuple
 import torch
 import torch
 import torch.nn.functional as F
@@ -226,18 +227,25 @@ def get_robustness(test_loader, model, config):
     return FGSM_accuracies, PGD_accuracies
 
     
- 
-def OOD(model, device, test_loader):
+@torch.inference_mode()
+def OOD(
+    model:torch.nn.Module,
+    device: torch.device, 
+    test_loader: torch.utils.data.DataLoader
+)-> Tuple[float, float]:
 
+    model.eval()
     scores = []
-    for data, target in test_loader:
-        
-        data, target = data.to(device), target.to(device)
 
-        output, _ = model(data)
+    for data, _ in test_loader:
+        
+        data = data.to(device)
+        output = model(data)
+        if isinstance(output, tuple):
+            output = output[0]
         output = F.softmax(output, dim = 1) 
-        score = output.max(-1, keepdim=True)[0] 
-        scores.append(score)
+        score = output.max(dim=1, keepdim=True)[0] 
+        scores.append(score.cpu())
     
     scores = torch.cat(scores, dim=0)
     avg_confidence = torch.mean(scores).item()
@@ -260,10 +268,8 @@ def get_OOD(model, config):
     datasets_list = OOD_datasets[config['dataset']['name']] 
     results = {datasets_list[i]: 0 for i in range(len(datasets_list))}   
     # torch.cuda.mem_get_info()
-    for ind, test_set in enumerate(datasets_list):
-        
+    for test_set in datasets_list:
         _, test_loader, _ = load_dataset(test_set, 512, num_workers = 8)
-        
         confidence_avg, confidence_std  = OOD(model, config['device'], test_loader)
         results[test_set] = (confidence_avg, confidence_std)
 

@@ -213,12 +213,14 @@ if __name__ == "__main__":
                     'optimizer_state_dict': opt.state_dict(),
                     },  logger.exp_directory + logger.name + '.pt')
             best_valid_acc = val_acc
+            early_stopping = 0  #reset early stopping counter
         else:
-            early_stopping+=1
+            if epoch > 160:
+                early_stopping+=1
 
         if early_stopping > config['patience']:
-            logger('Early stopping')
-            break       
+            logger({"step": epoch, "info": "Early stopping"})
+            break      
     
     model.load_state_dict(torch.load(logger.exp_directory + logger.name + '.pt')['model_state_dict'])
     test_prediction, test_tl, test_acc, test_f1, test_recall = main_test(model=model, testloader=testloader, device = config['device'])
