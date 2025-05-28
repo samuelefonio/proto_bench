@@ -179,4 +179,6 @@ wandb/
 logs/
 .DS_Store
 ./configs/.DS_Store/
-nohup.out
+README.md
+*/config.yaml
+*.out
