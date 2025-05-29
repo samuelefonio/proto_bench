@@ -116,7 +116,7 @@ def parse_args():
     parser.add_argument('-device',dest='device', default='cpu', type = str, help='device')
     parser.add_argument('-config',dest='config', default='configs/config.yaml', type = str, help='device')
     parser.add_argument('-seed',dest='seed', default=42, type = int, help='ranking of the run')
-    parser.add_argument('-ex',dest='ex_4_class', default=0, type = int, help='Number of examples per class if in config the key reduced is True')
+    parser.add_argument('-ex',dest='ex_4_class', default=5, type = int, help='Number of examples per class if in config the key reduced is True')
     args = parser.parse_args()
     return args
 
