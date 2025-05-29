@@ -1,0 +1,31 @@
+device: "cuda:0"
+dataset: 
+    name: "cifar10"
+    reduced: false
+    ex_4_class: 5
+output_dim: 64
+batch_size: 128
+epochs: 200
+seed: 42
+model: "resnet18"
+temperature: 1.0
+geometry: "euclidean"
+lam: 1.0
+patience: 10
+optimizer:
+    name: "sgd"
+    learning_rate: 0.1
+    weight_decay: 0.0005
+    momentum: 0.9
+lr_scheduler:
+    steps:
+        - 60
+        - 120
+        - 160
+    entity: 0.2
+logger:
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "grosso-work"
