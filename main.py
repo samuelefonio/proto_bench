@@ -43,7 +43,7 @@ def main_train(model:torch.nn.Module,
         avgloss += loss.item()
 
         opt.step()
-        
+        print(model.prototypes.data.norm())
         pred = distances.max(-1, keepdim=True)[1]
         pred = pred.squeeze()
         
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(yaml_file)
 
     config['seed'] = args.seed
-    config['ex_4_class'] = args.ex_4_class
+    config['dataset']['ex_4_class'] = args.ex_4_class
         
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])

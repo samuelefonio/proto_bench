@@ -1,4 +1,4 @@
-device: "cpu"
+device: "cuda"
 dataset: 
     name: "cifar10"
     reduced: false
@@ -7,23 +7,24 @@ output_dim: 10
 batch_size: 128
 epochs: 200
 seed: 42
-model: "simplecnn"
+model: "resnet18"
 temperature: 1.0
 geometry: "lorentz"
 patience: 10
 optimizer:
-    name: "sgd"
+    name: "rsgd"
     learning_rate: 0.1
-    weight_decay: 0.0001
-    momentum: 0.9
+    weight_decay: 0.0005
+    momentum: 0
 lr_scheduler:
     steps:
         - 60
         - 120
+        - 160
     entity: 0.2
 logger:
     # type: "Local"
     type: "Wandb"
     wandb_args:
          project: "itadata25"
-         entity: "mlgroup"
+         entity: "grosso-work"

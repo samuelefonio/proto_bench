@@ -56,6 +56,8 @@ class metric_model(nn.Module):
 
     def forward(self, images):
         embeddings = self.model(images)
+        if self.geometry == 'poincare':
+            embeddings = clip(embeddings, 1)
         embeddings = self.manifold.project(embeddings)
         
         if not self.manifold.manifold._check_point_on_manifold(self.prototypes, atol=1e-3, rtol=1e-3)[0]:
@@ -85,6 +87,10 @@ class metric_model(nn.Module):
         self.counter[represented_classes]
         self.counter[represented_classes] = self.counter[represented_classes] + 1
         
+def clip(input_vector, r):
+    input_norm = torch.norm(input_vector, dim = -1)
+    min_norm = torch.clamp(float(r)/input_norm, max = 1)
+    return min_norm[:, None] * input_vector
 
 def load_backbone(config):
     model = config['model']

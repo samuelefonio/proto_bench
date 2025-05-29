@@ -87,9 +87,9 @@ def load_optimizer(params, *args):
     elif optimname == "adam":
         optimizer = optim.AdamW(params, lr=learning_rate, weight_decay=decay)
     elif optimname == "rsgd":
-        optimizer = geoopt.optim.RiemannianSGD(params, lr=learning_rate, weight_decay=decay)
+        optimizer = geoopt.optim.RiemannianSGD(params, lr=learning_rate, weight_decay=decay, stabilize=1)
     elif optimname == "radam":
-        optimizer = geoopt.optim.RiemannianAdam(params, lr=learning_rate, weight_decay=decay)
+        optimizer = geoopt.optim.RiemannianAdam(params, lr=learning_rate, weight_decay=decay, stabilize=1)
     return optimizer
 
 

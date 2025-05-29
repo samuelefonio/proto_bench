@@ -3,7 +3,7 @@ dataset:
     name: "cifar100"
     reduced: false
     ex_4_class: 5
-output_dim: 64
+output_dim: 100
 batch_size: 128
 epochs: 200
 seed: 42
