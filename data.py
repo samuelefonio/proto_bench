@@ -68,7 +68,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar100'])} 
         reduced_indices = []
         for idx in np.arange(split):
             label = train.dataset[idx][1]  
@@ -115,7 +115,7 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cub'])} 
         reduced_indices = []
         for idx in np.arange(split):
             label = train.dataset[idx][1]  
@@ -164,7 +164,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['aircraft'])} 
         reduced_indices = []
         for idx in np.arange(split):
             label = train.dataset[idx][1]  
@@ -211,7 +211,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cars'])} 
         reduced_indices = []
         for idx in np.arange(split):
             label = train.dataset[idx][1]  
@@ -299,7 +299,7 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
-        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
+        class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
         reduced_indices = []
         for idx in np.arange(split):
             label = train.dataset[idx][1]  
