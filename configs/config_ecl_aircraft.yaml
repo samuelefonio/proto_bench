@@ -1,9 +1,9 @@
-device: "cuda:1"
+device: "cuda"
 dataset: 
     name: "aircraft"
     reduced: false
     ex_4_class: 5
-output_dim: 200
+output_dim: 100
 batch_size: 64
 epochs: 200
 seed: 42

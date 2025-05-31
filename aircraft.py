@@ -28,7 +28,7 @@ class Aircraft(VisionDataset):
     img_folder = os.path.join('fgvc-aircraft-2013b', 'data', 'images')
 
     def __init__(self, root, train=True, class_type='variant', transform=None,
-                 target_transform=None, download=False):
+                 target_transform=None, download=True):
         super(Aircraft, self).__init__(root, transform=transform, target_transform=target_transform)
         split = 'trainval' if train else 'test'
         if split not in self.splits:

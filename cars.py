@@ -29,7 +29,7 @@ class Cars(VisionDataset):
         'annos': ('http://imagenet.stanford.edu/internal/car196/cars_annos.mat', 'cars_annos.mat')
     }
 
-    def __init__(self, root, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, root, train=True, transform=None, target_transform=None, download=True):
         super(Cars, self).__init__(root, transform=transform, target_transform=target_transform)
 
         self.loader = default_loader
