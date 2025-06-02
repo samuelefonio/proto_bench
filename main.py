@@ -43,7 +43,7 @@ def main_train(model:torch.nn.Module,
         avgloss += loss.item()
 
         opt.step()
-        print(model.prototypes.data.norm())
+        #print(model.prototypes.data.norm())
         pred = distances.max(-1, keepdim=True)[1]
         pred = pred.squeeze()
         

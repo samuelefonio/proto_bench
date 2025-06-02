@@ -148,25 +148,30 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
     transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
 
+    #loading the already splitted dataset
+    train = Aircraft(root='data/aircraft', split='train', transform=transform_train, download=True)
+    valid   = Aircraft(root='data/aircraft', split='val',   transform=transform_test,  download=False)
+    test  = Aircraft(root='data/aircraft', split='test',  transform=transform_test,  download=False)
 
-    train = Aircraft(root='data/aircraft', train = True, transform=transform_train)
-    test    = Aircraft(root='data/aircraft', train = False, transform=transform_test)
 
-    num_train = len(train)
-    indices = list(range(num_train))
-    np.random.shuffle(indices)
+    # train = Aircraft(root='data/aircraft', train = True, transform=transform_train)
+    # test    = Aircraft(root='data/aircraft', train = False, transform=transform_test)
+
+    # num_train = len(train)
+    # indices = list(range(num_train))
+    # np.random.shuffle(indices)
     
-    valid_size = 0.1
-    split = int(np.floor(valid_size * num_train))
-    train_indices, valid_indices = indices[split:], indices[:split]
-    validation = torch.utils.data.Subset(train, valid_indices)
-    train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    # valid_size = 0.1
+    # split = int(np.floor(valid_size * num_train))
+    # train_indices, valid_indices = indices[split:], indices[:split]
+    # validation = torch.utils.data.Subset(train, valid_indices)
+    # train = torch.utils.data.Subset(train, train_indices)
+    # validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['aircraft'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in range(len(train)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -176,6 +181,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
         train = torch.utils.data.Subset(train, reduced_indices)
     
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(valid, batch_size=batch_size, num_workers=num_workers, shuffle=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
     return trainloader, testloader, validloader
