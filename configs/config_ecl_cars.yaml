@@ -1,26 +1,26 @@
-device: "cuda:0"
+device: "cuda"
 dataset: 
-    name: "cifar10"
+    name: "cars"
     reduced: false
     ex_4_class: 5
-output_dim: 10
-batch_size: 128
+output_dim: 196
+batch_size: 64
 epochs: 200
 seed: 42
 model: "resnet18"
-temperature: 1.0
+temperature: 0.1
 geometry: "euclidean"
-lam: 1.0
+lam: 0.01
 patience: 10
 optimizer:
     name: "sgd"
     learning_rate: 0.1
-    weight_decay: 0.0005
+    weight_decay: 0.0001
     momentum: 0.9
 lr_scheduler:
     steps:
         - 60
-        - 120
+        - 140
         - 160
     entity: 0.2
 logger:
@@ -28,4 +28,4 @@ logger:
     type: "Wandb"
     wandb_args:
          project: "itadata25"
-         entity: "mlgroup"
+         entity: "grosso-work"

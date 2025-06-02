@@ -257,13 +257,12 @@ def OOD(
 
 def get_OOD(model, config):
     datasets_list_0 = ['cifar10','cifar100']
-    datasets_list_1 = ['cub','aircraft','cars']
+    datasets_list_1 = ['cub','aircraft']
     OOD_datasets = {
         'cifar10':datasets_list_0,
         'cifar100':datasets_list_0,
         'cub':datasets_list_1,
-        'aircraft':datasets_list_1,
-        'cars':datasets_list_1
+        'aircraft':datasets_list_1
     }
     datasets_list = OOD_datasets[config['dataset']['name']] 
     results = {datasets_list[i]: 0 for i in range(len(datasets_list))}   

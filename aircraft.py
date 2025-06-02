@@ -2,8 +2,7 @@ import numpy as np
 import os
 from torchvision.datasets import VisionDataset
 from torchvision.datasets.folder import default_loader
-from torchvision.datasets.utils import download_url
-from torchvision.datasets.utils import extract_archive
+from torchvision.datasets.utils import download_url, extract_archive
 
 
 class Aircraft(VisionDataset):
