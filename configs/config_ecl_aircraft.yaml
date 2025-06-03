@@ -8,7 +8,7 @@ batch_size: 64
 epochs: 200
 seed: 42
 model: "resnet18"
-temperature: 1
+temperature: 0.1
 geometry: "euclidean"
 lam: 1.0
 patience: 10
