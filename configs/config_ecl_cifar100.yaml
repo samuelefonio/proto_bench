@@ -6,9 +6,9 @@ dataset:
 output_dim: 100
 batch_size: 128
 epochs: 200
-seed: 42
+seed: 12345
 model: "resnet18"
-temperature: 1.0
+temperature: 1
 geometry: "euclidean"
 lam: 1.0
 patience: 10
@@ -28,4 +28,4 @@ logger:
     type: "Wandb"
     wandb_args:
          project: "itadata25"
-         entity: "grosso-work"
+         entity: "mlgroup"

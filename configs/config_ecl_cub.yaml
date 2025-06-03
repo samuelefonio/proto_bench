@@ -28,4 +28,4 @@ logger:
     type: "Wandb"
     wandb_args:
          project: "itadata25"
-         entity: "grosso-work"
+         entity: "mlgroup"
