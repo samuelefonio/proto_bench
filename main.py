@@ -125,9 +125,6 @@ if __name__ == "__main__":
     args = parse_args()
     with open(args.config) as yaml_file:
         config = yaml.safe_load(yaml_file)
-
-    config['seed'] = args.seed
-    config['dataset']['ex_4_class'] = args.ex_4_class
         
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])
