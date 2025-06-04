@@ -1,19 +1,19 @@
 device: "cuda"
 dataset: 
-    name: "cifar100"
+    name: "cifar10"
     reduced: false
     ex_4_class: 5
-output_dim: 100
+output_dim: 10
 batch_size: 128
 epochs: 200
 seed: 42
 model: "resnet18"
-temperature: 0.05
-geometry: "euclidean"
+temperature: 0.1
+geometry: "hyperspherical"
 lam: 1.0
 patience: 10
 optimizer:
-    name: "sgd"
+    name: "rsgd"
     learning_rate: 0.1
     weight_decay: 0.0005
     momentum: 0.9
