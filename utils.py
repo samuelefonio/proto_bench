@@ -102,16 +102,16 @@ class Manifold(nn.Module):
         if geometry == 'lorentz':
             self.manifold = geoopt.Lorentz()
         elif geometry == 'hyperspherical':
-            self.manifold = geoopt.Sphere()
+            self.manifold = geoopt.SphereExact()
         elif geometry == 'euclidean':
             self.manifold = geoopt.Euclidean()
 
     def project(self, x):
         if self.geometry == 'euclidean':
             return x
-        elif self.geometry in ['poincare', 'lorentz']:
+        elif self.geometry == 'poincare':
             return self.manifold.expmap0(x)
-        elif self.geometry == 'hyperspherical':
+        elif self.geometry == ['hyperspherical', 'lorentz']:
             return self.manifold.projx(x)
         
     def distance(self, x, p):
