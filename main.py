@@ -136,7 +136,6 @@ if __name__ == "__main__":
     if args.ex_4_class is not None:
         config['dataset']['ex_4_class'] = args.ex_4_class
 
-        
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])
     torch.backends.cudnn.deterministic = True
@@ -240,13 +239,13 @@ if __name__ == "__main__":
     
     test_FGSM, test_PGD = get_robustness(testloader, model, config)
     for i in range(len(test_FGSM)):
-        logger({"step": i, 
+        logger({"step": epoch+1+i, 
                 "test_FGSM_eps": test_FGSM[i],
                 "test_PGD_eps": test_PGD[i]})
         
     results_OOD = get_OOD(model, config)
     for key, value in results_OOD.items():
-        logger({"step": 1, 
+        logger({"step": epoch+1+i, 
                 f"confidence_{config['dataset']['name']}_on_{key}": value[0],
                 f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
 
