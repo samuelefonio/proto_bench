@@ -92,7 +92,7 @@ def initialize_logger_from_config(config: dict) -> Union[Logger, WandbLogger]:
     
     # Generate a unique hash for the logger configuration
     config_hash = generate_config_hash(config)
-    name = f"{config_hash}"
+    name = f"[{config['dataset']['name']}][{config['geometry']}][{config['temperature']}][{config['seed']}]{config_hash}"
     
     # Initialize either Logger or WandbLogger based on configuration
     if logger_type == "wandb":
