@@ -113,10 +113,11 @@ import yaml
 
 def parse_args():
     parser = argparse.ArgumentParser(description="classification")
-    parser.add_argument('-device',dest='device', default='cpu', type = str, help='device')
-    parser.add_argument('-config',dest='config', default='configs/config.yaml', type = str, help='device')
-    parser.add_argument('-seed',dest='seed', default=42, type = int, help='ranking of the run')
-    parser.add_argument('-ex',dest='ex_4_class', default=5, type = int, help='Number of examples per class if in config the key reduced is True')
+    parser.add_argument('-device',dest='device', default=None, type = str, help='device')
+    parser.add_argument('-config',dest='config', default=None, type = str, help='device')
+    parser.add_argument('-seed',dest='seed', default=None, type = int, help='ranking of the run')
+    parser.add_argument('-t',dest='temperature', default=None, type = float, help='temperature')
+    parser.add_argument('-ex',dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
     args = parser.parse_args()
     return args
 
@@ -125,6 +126,16 @@ if __name__ == "__main__":
     args = parse_args()
     with open(args.config) as yaml_file:
         config = yaml.safe_load(yaml_file)
+        
+    if args.device is not None:
+        config['device'] = args.device
+    if args.seed is not None:
+        config['seed'] = args.seed
+    if args.temperature is not None:
+        config['temperature'] = args.temperature
+    if args.ex_4_class is not None:
+        config['dataset']['ex_4_class'] = args.ex_4_class
+
         
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])
