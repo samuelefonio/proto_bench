@@ -111,8 +111,9 @@ class Manifold(nn.Module):
             return x
         elif self.geometry == 'poincare':
             return self.manifold.expmap0(x)
-        elif self.geometry == ['hyperspherical', 'lorentz']:
+        elif self.geometry in ['hyperspherical', 'lorentz']:
             return self.manifold.projx(x)
+        
         
     def distance(self, x, p):
         """
