@@ -113,12 +113,12 @@ import yaml
 
 def parse_args():
     parser = argparse.ArgumentParser(description="classification")
-    parser.add_argument('-device',dest='device', default=None, type = str, help='device')
-    parser.add_argument('-config',dest='config', default=None, type = str, help='device')
-    parser.add_argument('-seed',dest='seed', default=None, type = int, help='ranking of the run')
-    parser.add_argument('-t',dest='temperature', default=None, type = float, help='temperature')
-    parser.add_argument('-ex',dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
-    parser.add_argument('-shrink', dest='shrink_init', action='store_true', info='put it if you want to have shrinked initialization')
+    parser.add_argument('-device', dest='device', default=None, type = str, help='device')
+    parser.add_argument('-config', dest='config', default=None, type = str, help='device')
+    parser.add_argument('-seed', dest='seed', default=None, type = int, help='ranking of the run')
+    parser.add_argument('-t', dest='temperature', default=None, type = float, help='temperature')
+    parser.add_argument('-ex', dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
+    parser.add_argument('-shrink', dest='shrink_init', action='store_true')
     args = parser.parse_args()
     return args
 
