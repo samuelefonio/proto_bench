@@ -136,7 +136,7 @@ if __name__ == "__main__":
         config['temperature'] = args.temperature
     if args.ex_4_class is not None:
         config['dataset']['ex_4_class'] = args.ex_4_class
-
+    config['shrink_init'] = args.shrink_init
     torch.manual_seed(config['seed'])
     torch.cuda.manual_seed_all(config['seed'])
     torch.backends.cudnn.deterministic = True
