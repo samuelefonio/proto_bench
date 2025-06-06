@@ -36,7 +36,8 @@ class metric_model(nn.Module):
         output_dim: int = 8,
         temperature: float = 1.0,
         dataset: str = 'mnist',
-        geometry: str = 'euclidean'
+        geometry: str = 'euclidean',
+        shrink_init: bool = False
     ):
         super(metric_model, self).__init__()
         self.model = model
@@ -45,9 +46,13 @@ class metric_model(nn.Module):
         self.temperature = temperature
         self.dataset = dataset
         self.geometry = geometry
+        self.shrink_init = shrink_init
         self.manifold = Manifold(self.geometry)
         self.num_classes = DATASETS_CLASSES[self.dataset]
         prototypes = nn.Parameter(torch.rand((DATASETS_CLASSES[self.dataset], self.output_dim), device = self.device), requires_grad = True)
+        if self.shrink_init:
+            prototypes = nn.Parameter(-0.1*torch.rand((DATASETS_CLASSES[self.dataset], self.output_dim), device = self.device)+0.1, requires_grad = True)
+
         
         self.parametric_prototypes = geoopt.ManifoldParameter(self.manifold.project(prototypes), manifold = self.manifold.manifold, requires_grad=True)
         self.centroid_prototypes = geoopt.ManifoldParameter(self.manifold.project(prototypes), manifold = self.manifold.manifold, requires_grad=False)

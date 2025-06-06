@@ -118,6 +118,7 @@ def parse_args():
     parser.add_argument('-seed',dest='seed', default=None, type = int, help='ranking of the run')
     parser.add_argument('-t',dest='temperature', default=None, type = float, help='temperature')
     parser.add_argument('-ex',dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
+    parser.add_argument('-shrink', dest='shrink_init', action='store_true', info='put it if you want to have shrinked initialization')
     args = parser.parse_args()
     return args
 
@@ -156,7 +157,8 @@ if __name__ == "__main__":
                          output_dim = config['output_dim'], 
                          temperature = config['temperature'], 
                          dataset = config['dataset']['name'], 
-                         geometry = config['geometry']
+                         geometry = config['geometry'],
+                         shrink_init = args.shrink_init
                          )
     model = model.to(config['device'])
     
