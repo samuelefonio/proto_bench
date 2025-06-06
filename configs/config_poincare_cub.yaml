@@ -1,0 +1,30 @@
+device: "cuda"
+dataset: 
+    name: "cub"
+    reduced: false
+    ex_4_class: 5
+output_dim: 200
+batch_size: 64
+epochs: 200
+seed: 42
+model: "resnet18"
+temperature: 1.0
+geometry: "poincare"
+patience: 10
+optimizer:
+    name: "rsgd"
+    learning_rate: 0.1
+    weight_decay: 0.0001
+    momentum: 0.9
+lr_scheduler:
+    steps:
+        - 60
+        - 140
+        - 160
+    entity: 0.2
+logger:
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "mlgroup"
