@@ -1,4 +1,4 @@
-device: "cuda"
+device: "cuda:1"
 dataset: 
     name: "cub"
     reduced: false
@@ -11,8 +11,9 @@ model: "resnet18"
 temperature: 1.0
 geometry: "poincare"
 patience: 10
+proto_opt: false
 optimizer:
-    name: "rsgd"
+    name: "sgd"
     learning_rate: 0.1
     weight_decay: 0.0001
     momentum: 0.9
@@ -28,3 +29,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
+         tags: ['proto_opt']

@@ -17,7 +17,8 @@ def main_train(model:torch.nn.Module,
                trainloader:data.DataLoader, 
                opt:torch.optim.Optimizer, 
                scheduler:torch.optim.lr_scheduler, 
-               device:torch.device = 'cpu'
+               device:torch.device = 'cpu',
+               proto_opt = None
                ):
     model.train()
     avgloss = 0.
@@ -33,7 +34,8 @@ def main_train(model:torch.nn.Module,
         y = y.squeeze()
         
         opt.zero_grad()
-        
+        if proto_opt is not None:
+            proto_opt.zero_grad()
         distances, embeddings = model(x)
         
         loss = criterion(distances, y) 
@@ -43,6 +45,8 @@ def main_train(model:torch.nn.Module,
         avgloss += loss.item()
 
         opt.step()
+        if proto_opt is not None:
+            proto_opt.step()
         #print(model.prototypes.data.norm())
         pred = distances.max(-1, keepdim=True)[1]
         pred = pred.squeeze()
@@ -166,7 +170,15 @@ if __name__ == "__main__":
                          )
     model = model.to(config['device'])
     
-    opt = load_optimizer(model.parameters(), *list(config['optimizer'].values()))
+    if config['proto_opt']:
+        filtered_parameters = [p for name, p in model.named_parameters() if 'proto' not in name]
+        proto_params = [p for name, p in model.named_parameters() if 'proto' in name]
+        optimizer_parameters = [{'params': filtered_parameters}]
+        opt = load_optimizer(optimizer_parameters, *list(config['optimizer'].values()))
+        proto_opt = geoopt.optim.RiemannianSGD(proto_params, lr = 0.001, momentum=0.9, dampening=0, weight_decay=0, nesterov=False, stabilize=None)
+    else:
+        opt = load_optimizer(model.parameters(), *list(config['optimizer'].values()))
+        proto_opt = None
     
     scheduler = torch.optim.lr_scheduler.MultiStepLR(opt, config['lr_scheduler']['steps'], gamma=config['lr_scheduler']['entity'])
 
@@ -203,7 +215,8 @@ if __name__ == "__main__":
                                                                     trainloader, 
                                                                     opt = opt,
                                                                     scheduler = scheduler,
-                                                                    device = config['device'])
+                                                                    device = config['device'],
+                                                                    proto_opt = proto_opt)
         
         t1 = time.time()
         stats = {"step": epoch, 

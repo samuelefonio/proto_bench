@@ -10,6 +10,7 @@ seed: 42
 model: "resnet18"
 temperature: 0.1
 geometry: "euclidean"
+proto_opt: false
 lam: 0.01
 patience: 10
 optimizer:
@@ -28,4 +29,5 @@ logger:
     type: "Wandb"
     wandb_args:
          project: "itadata25"
-         entity: "grosso-work"
+         entity: "mlgroup"
+         tags: ['proto_opt']

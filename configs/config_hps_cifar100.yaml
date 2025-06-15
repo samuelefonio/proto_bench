@@ -10,6 +10,7 @@ seed: 42
 model: "resnet18"
 temperature: 0.02
 geometry: "hyperspherical"
+proto_opt: false
 lam: 1.0
 patience: 10
 optimizer:
@@ -29,3 +30,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
+         tags: ['proto_opt']
