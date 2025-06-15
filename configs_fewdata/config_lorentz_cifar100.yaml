@@ -29,4 +29,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
-         tags: ['proto_opt']
+         
