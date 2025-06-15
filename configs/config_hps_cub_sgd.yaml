@@ -1,16 +1,16 @@
 device: "cuda"
 dataset: 
-    name: "aircraft"
+    name: "cub"
     reduced: false
-    ex_4_class: 5
-output_dim: 100
+    ex_4_class: 50
+output_dim: 200
 batch_size: 64
 epochs: 200
 seed: 117
 model: "resnet18"
-temperature: 1
-geometry: "euclidean"
-lam: 1.0
+temperature: 0.1
+geometry: "hyperspherical"
+lam: 0.01
 patience: 10
 optimizer:
     name: "sgd"
