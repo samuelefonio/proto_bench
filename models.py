@@ -100,21 +100,35 @@ def clip(input_vector, r):
 def load_backbone(config):
     model = config['model']
     modello = model.lower()
+
     if modello == 'simplecnn':
-        out_model = SimpleCNN(output_dim = config['output_dim'])
+        out_model = SimpleCNN(output_dim=config['output_dim'])
+
     elif modello == 'resnet18':
-        if config['dataset']['name'] in ['cifar10', 'cifar100']: 
-            out_model = resnet.resnet18()           
-            num_ftrs = out_model.fc.in_features
-            out_model.fc = nn.Linear(num_ftrs, config['output_dim'])
+        dataset_name = config['dataset']['name']
+        reduced = config['dataset'].get('reduced', False)
+
+        if dataset_name in ['cifar10', 'cifar100']:
+            if reduced:
+                print('Using pretrained ResNet18 for CIFAR')
+                out_model = torchmodel.resnet18(weights='DEFAULT', progress=True)
+            else:
+                out_model = resnet.resnet18()  #not pretrained
+            # Patch conv1 and maxpool for CIFAR
+            #out_model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+            #out_model.maxpool = nn.Identity()
+
         else:
-            if config['dataset']['reduced']:
+            if reduced:
+                print('Using pretrained ResNet18')
                 out_model = torchmodel.resnet18(weights='DEFAULT', progress=True)
             else:
                 out_model = torchmodel.resnet18()
-            num_ftrs = out_model.fc.in_features
-            out_model.fc = nn.Linear(num_ftrs, config['output_dim'])
+
+        num_ftrs = out_model.fc.in_features
+        out_model.fc = nn.Linear(num_ftrs, config['output_dim'])
+
     else:
-        raise Exception('Selected dataset is not available.')
+        raise Exception('Selected model is not available.')
 
     return out_model

@@ -123,6 +123,7 @@ def parse_args():
     parser.add_argument('-t', dest='temperature', default=None, type = float, help='temperature')
     parser.add_argument('-ex', dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
     parser.add_argument('-d', dest='output_dim', default=None, type = int, help='embedding dimension')
+    parser.add_argument('-bs', dest='batch_size', default=None, type=int, help='batch size')
     parser.add_argument('-shrink', dest='shrink_init', action='store_true')
     parser.add_argument('-protoopt', dest='proto_opt', action='store_true')
     args = parser.parse_args()
@@ -144,6 +145,8 @@ if __name__ == "__main__":
         config['dataset']['ex_4_class'] = args.ex_4_class
     if args.output_dim is not None:
         config['output_dim'] = args.output_dim
+    if args.batch_size is not None:
+        config['batch_size'] = args.batch_size
     
 
     config['shrink_init'] = args.shrink_init

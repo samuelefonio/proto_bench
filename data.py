@@ -81,7 +81,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar100'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -89,7 +89,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -128,7 +128,7 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cub'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -136,7 +136,7 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -177,7 +177,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['aircraft'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -185,7 +185,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -224,7 +224,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cars'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -232,7 +232,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -268,7 +268,7 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -276,7 +276,7 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -284,22 +284,23 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     
 
 def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
+
     if reduced:
         transform_train = transforms.Compose([
-        transforms.Resize((224,224)),
-        transforms.RandomCrop(224, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        ])
+                            transforms.Resize((224,224)),
+                            transforms.RandomCrop(224, padding=4),
+                            transforms.RandomHorizontalFlip(),
+                            transforms.RandomRotation(15),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=mrgb, std=srgb)])
     else:
         transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        ])
-
+                            transforms.RandomCrop(32, 4),
+                            transforms.RandomHorizontalFlip(),
+                            transforms.RandomRotation(15),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=mrgb, std=srgb)])
+        
     transform_test = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -321,7 +322,7 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -329,9 +330,8 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
-    
     return trainloader, testloader, validloader
     
