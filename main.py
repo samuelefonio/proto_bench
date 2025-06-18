@@ -127,6 +127,7 @@ def parse_args():
     parser.add_argument('-ebs', dest='eval_batch_size', default=None, type=int, help='eval batch size')
     parser.add_argument('-lr', dest='learning_rate', default=None, type=float, help='learning rate')
     parser.add_argument('-wd', dest='weight_decay', default=None, type=float, help='weight decay')
+    parser.add_argument('-optim', dest='optimizer', default=None, type=str, help='optimizer')
     parser.add_argument('-shrink', dest='shrink_init', action='store_true')
     parser.add_argument('-protoopt', dest='proto_opt', action='store_true')
     args = parser.parse_args()
@@ -152,6 +153,8 @@ if __name__ == "__main__":
         config['batch_size'] = args.batch_size
     if args.eval_batch_size is not None:
         config['eval_batch_size'] = args.eval_batch_size
+    if args.optimizer is not None:
+        config['optimizer']['name'] = args.optimizer
     if args.weight_decay is not None:
         config['optimizer']['weight_decay'] = args.weight_decay
     if args.learning_rate is not None:
