@@ -124,7 +124,9 @@ def parse_args():
     parser.add_argument('-ex', dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
     parser.add_argument('-d', dest='output_dim', default=None, type = int, help='embedding dimension')
     parser.add_argument('-bs', dest='batch_size', default=None, type=int, help='batch size')
+    parser.add_argument('-ebs', dest='eval_batch_size', default=None, type=int, help='eval batch size')
     parser.add_argument('-lr', dest='learning_rate', default=None, type=float, help='learning rate')
+    parser.add_argument('-wd', dest='weight_decay', default=None, type=float, help='weight decay')
     parser.add_argument('-shrink', dest='shrink_init', action='store_true')
     parser.add_argument('-protoopt', dest='proto_opt', action='store_true')
     args = parser.parse_args()
@@ -148,6 +150,10 @@ if __name__ == "__main__":
         config['output_dim'] = args.output_dim
     if args.batch_size is not None:
         config['batch_size'] = args.batch_size
+    if args.eval_batch_size is not None:
+        config['eval_batch_size'] = args.eval_batch_size
+    if args.weight_decay is not None:
+        config['optimizer']['weight_decay'] = args.weight_decay
     if args.learning_rate is not None:
         config['optimizer']['learning_rate'] = args.learning_rate
 
@@ -164,8 +170,14 @@ if __name__ == "__main__":
 
     logger.log(config)
 
-    trainloader, testloader, validloader = load_dataset(config['dataset']['name'], 
+    trainloader, _, _ = load_dataset(config['dataset']['name'], 
                                            config['batch_size'], 
+                                           num_workers = 4, 
+                                           reduced = config['dataset']['reduced'],
+                                           ex_4_class = config['dataset']['ex_4_class'],)
+    
+    _, testloader, validloader = load_dataset(config['dataset']['name'], 
+                                           config['eval_batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
                                            ex_4_class = config['dataset']['ex_4_class'],)
