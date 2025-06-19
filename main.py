@@ -173,17 +173,17 @@ if __name__ == "__main__":
 
     logger.log(config)
 
-    trainloader, _, _ = load_dataset(config['dataset']['name'], 
+    trainloader, _, validloader = load_dataset(config['dataset']['name'], 
                                            config['batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
-                                           ex_4_class = config['dataset']['ex_4_class'],)
+                                           ex_4_class = config['dataset']['ex_4_class'])
     
-    _, testloader, validloader = load_dataset(config['dataset']['name'], 
+    _, testloader, _ = load_dataset(config['dataset']['name'], 
                                            config['eval_batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
-                                           ex_4_class = config['dataset']['ex_4_class'],)
+                                           ex_4_class = config['dataset']['ex_4_class'])
 
     model = load_backbone(config) 
     model = metric_model(model, device = config['device'], 

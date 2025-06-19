@@ -112,11 +112,11 @@ def load_backbone(config):
             if reduced:
                 print('Using pretrained ResNet18 for CIFAR')
                 out_model = torchmodel.resnet18(weights='DEFAULT', progress=True)
+                # Patch conv1 and maxpool for CIFAR
+                out_model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+                out_model.maxpool = nn.Identity()
             else:
                 out_model = resnet.resnet18()  #not pretrained
-            # Patch conv1 and maxpool for CIFAR
-            out_model.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-            out_model.maxpool = nn.Identity()
 
         else:
             if reduced:

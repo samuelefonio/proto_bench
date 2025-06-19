@@ -286,9 +286,8 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
 def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
 
     transform_train = transforms.Compose([
-                            transforms.RandomCrop(32, 4),
+                            transforms.RandomCrop(32, padding=4),
                             transforms.RandomHorizontalFlip(),
-                            transforms.RandomRotation(15),
                             transforms.ToTensor(),
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
     ])
@@ -298,34 +297,32 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
     ])
 
-    train_full = datasets.CIFAR10('data/cifar10', train=True, transform=transform_train, download=True)
-    test = datasets.CIFAR10('data/cifar10', train=False, transform=transform_test, download=True)
-
-    num_train = len(train_full)
+    train = datasets.CIFAR10('data/cifar10', train=True, transform = transform_train, download=True)
+    test = datasets.CIFAR10('data/cifar10', train=False, transform = transform_test, download=True)
+    num_train = len(train)
     indices = list(range(num_train))
     np.random.shuffle(indices)
 
     valid_size = 0.1
     split = int(np.floor(valid_size * num_train))
     train_indices, valid_indices = indices[split:], indices[:split]
-
-    validation = torch.utils.data.Subset(train_full, valid_indices)
+    validation = torch.utils.data.Subset(train, valid_indices)
+    train = torch.utils.data.Subset(train, train_indices)
+    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
 
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
         reduced_indices = []
-        for idx in train_indices:
-            label = train_full[idx][1]  
+        for idx in np.arange(split):
+            label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
                 class_counts[label] += 1
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
-        train_indices = reduced_indices
+        train = torch.utils.data.Subset(train, reduced_indices)
 
-    train = torch.utils.data.Subset(train_full, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle=True, drop_last=False)
-    trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle=True, drop_last=False)
+    trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+
     return trainloader, testloader, validloader
-    
