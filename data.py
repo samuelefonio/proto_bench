@@ -185,7 +185,6 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -232,7 +231,6 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -276,7 +274,6 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
     testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
     
@@ -313,7 +310,7 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
         reduced_indices = []
-        for idx in np.arange(split):
+        for idx in np.arange(len(train_indices)):
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)

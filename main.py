@@ -138,7 +138,6 @@ if __name__ == "__main__":
     args = parse_args()
     with open(args.config) as yaml_file:
         config = yaml.safe_load(yaml_file)
-        
     if args.device is not None:
         config['device'] = args.device
     if args.seed is not None:
@@ -173,13 +172,21 @@ if __name__ == "__main__":
 
     logger.log(config)
 
-    trainloader, _, validloader = load_dataset(config['dataset']['name'], 
+    val_batch = config['eval_batch_size'] if config['dataset']['reduced'] else config['batch_size']
+    
+    trainloader, _ , _  = load_dataset(config['dataset']['name'], 
                                            config['batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
                                            ex_4_class = config['dataset']['ex_4_class'])
     
-    _, testloader, _ = load_dataset(config['dataset']['name'], 
+    _ , _ , validloader = load_dataset(config['dataset']['name'], 
+                                           val_batch, 
+                                           num_workers = 4, 
+                                           reduced = config['dataset']['reduced'],
+                                           ex_4_class = config['dataset']['ex_4_class'])
+    
+    _ , testloader, _   = load_dataset(config['dataset']['name'], 
                                            config['eval_batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
@@ -194,7 +201,6 @@ if __name__ == "__main__":
                          shrink_init = args.shrink_init
                          )
     model = model.to(config['device'])
-    
     if config['proto_opt']:
         filtered_parameters = [p for name, p in model.named_parameters() if 'proto' not in name]
         proto_params = [p for name, p in model.named_parameters() if 'proto' in name]
