@@ -16,7 +16,7 @@ patience: 10
 optimizer:
     name: "adam"
     learning_rate: 0.0003
-    weight_decay: 0.00001
+    weight_decay: 0.0003
     momentum: 0.9
 lr_scheduler:
     steps:

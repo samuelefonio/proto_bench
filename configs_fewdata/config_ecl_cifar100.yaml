@@ -1,21 +1,21 @@
 device: "cuda"
 dataset: 
     name: "cifar100"
-    reduced: false
+    reduced: true
     ex_4_class: 5
 output_dim: 100
-batch_size: 128
+batch_size: 16
 epochs: 200
 seed: 42
 model: "resnet18"
-temperature: 0.05
+temperature: 1
 geometry: "euclidean"
 lam: 1.0
 patience: 10
 optimizer:
-    name: "sgd"
-    learning_rate: 0.1
-    weight_decay: 0.0005
+    name: "adam"
+    learning_rate: 0.0003
+    weight_decay: 0.0003
     momentum: 0.9
 lr_scheduler:
     steps:

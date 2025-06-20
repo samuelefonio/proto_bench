@@ -5,6 +5,7 @@ dataset:
     ex_4_class: 50
 output_dim: 200
 batch_size: 64
+eval_batch_size: 512
 epochs: 200
 seed: 117
 model: "resnet18"
@@ -29,3 +30,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
+         tags: ["proto_opt"]

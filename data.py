@@ -45,23 +45,15 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
     srgb = [0.267, 0.256, 0.276]
     size = transforms.Normalize(mean=mrgb, std=srgb)
 
-    if reduced:
-        transformations=transforms.Compose([
-                            transforms.Resize((224,224)),
-                            transforms.RandomCrop(224, padding=4),
+    transformations=transforms.Compose([
+                            transforms.RandomCrop(32, padding=4),
                             transforms.RandomHorizontalFlip(),
-                            transforms.RandomRotation(15),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=mrgb, std=srgb)])
-    else:
-        transformations=transforms.Compose([
-                            transforms.RandomCrop(32, 4),
-                            transforms.RandomHorizontalFlip(),
-                            transforms.RandomRotation(15),
                             transforms.ToTensor(),
                             transforms.Normalize(mean=mrgb, std=srgb)])
         
-    test_transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=mrgb, std=srgb)])
+    test_transformations = transforms.Compose([
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=mrgb, std=srgb)])
     
     train = datasets.CIFAR100('data/cifar100/', train = True, transform = transformations, download = True)
     test = datasets.CIFAR100('data/cifar100/', train = False, transform = test_transformations, download = True)
