@@ -2,12 +2,12 @@ device: "cuda"
 dataset: 
     name: "cifar10"
     reduced: true
-    ex_4_class: 5
+    ex_4_class: 30
 output_dim: 10
 batch_size: 2
-eval_batch_size: 512
+eval_batch_size: 128
 epochs: 200
-seed: 42
+seed: 12345
 model: "resnet18"
 temperature: 0.1
 geometry: "euclidean"

@@ -1,10 +1,11 @@
 device: "cuda"
 dataset: 
     name: "cifar10"
-    reduced: false
+    reduced: true
     ex_4_class: 5
 output_dim: 10
-batch_size: 128
+batch_size: 2
+eval_batch_size: 512
 epochs: 200
 seed: 42
 model: "resnet18"
@@ -13,7 +14,7 @@ geometry: "hyperspherical"
 lam: 1.0
 patience: 10
 optimizer:
-    name: "rsgd"
+    name: "radam"
     learning_rate: 0.1
     weight_decay: 0.0005
     momentum: 0.9
@@ -29,3 +30,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
+         tags: ["few_data"]

@@ -2,9 +2,10 @@ device: "cuda"
 dataset: 
     name: "cifar100"
     reduced: true
-    ex_4_class: 5
+    ex_4_class: 15
 output_dim: 100
-batch_size: 16
+batch_size: 8
+eval_batch_size: 128
 epochs: 200
 seed: 42
 model: "resnet18"
@@ -29,3 +30,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
+         tags: ["few_data"]
