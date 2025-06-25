@@ -5,7 +5,7 @@ dataset:
     ex_4_class: 15
 output_dim: 100
 batch_size: 8
-eval_batch_size: 128
+
 epochs: 200
 seed: 42
 model: "resnet18"

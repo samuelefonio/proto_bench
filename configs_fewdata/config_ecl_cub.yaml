@@ -1,22 +1,22 @@
 device: "cuda"
 dataset: 
     name: "cub"
-    reduced: false
-    ex_4_class: 50
+    reduced: true
+    ex_4_class: 5
 output_dim: 200
-batch_size: 64
-eval_batch_size: 512
+batch_size: 16
+
 epochs: 200
-seed: 117
+seed: 42
 model: "resnet18"
 temperature: 1
 geometry: "euclidean"
 lam: 0.01
 patience: 10
 optimizer:
-    name: "sgd"
-    learning_rate: 0.1
-    weight_decay: 0.0001
+    name: "adam"
+    learning_rate: 0.0003
+    weight_decay: 0.0003
     momentum: 0.9
 lr_scheduler:
     steps:
@@ -30,4 +30,4 @@ logger:
     wandb_args:
          project: "itadata25"
          entity: "mlgroup"
-         tags: ["proto_opt"]
+         tags: ["few_data"]

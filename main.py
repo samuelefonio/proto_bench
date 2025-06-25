@@ -124,7 +124,6 @@ def parse_args():
     parser.add_argument('-ex', dest='ex_4_class', default=None, type = int, help='Number of examples per class if in config the key reduced is True')
     parser.add_argument('-d', dest='output_dim', default=None, type = int, help='embedding dimension')
     parser.add_argument('-bs', dest='batch_size', default=None, type=int, help='batch size')
-    parser.add_argument('-ebs', dest='eval_batch_size', default=None, type=int, help='eval batch size')
     parser.add_argument('-lr', dest='learning_rate', default=None, type=float, help='learning rate')
     parser.add_argument('-wd', dest='weight_decay', default=None, type=float, help='weight decay')
     parser.add_argument('-optim', dest='optimizer', default=None, type=str, help='optimizer')
@@ -150,8 +149,6 @@ if __name__ == "__main__":
         config['output_dim'] = args.output_dim
     if args.batch_size is not None:
         config['batch_size'] = args.batch_size
-    if args.eval_batch_size is not None:
-        config['eval_batch_size'] = args.eval_batch_size
     if args.optimizer is not None:
         config['optimizer']['name'] = args.optimizer
     if args.weight_decay is not None:
@@ -172,22 +169,8 @@ if __name__ == "__main__":
 
     logger.log(config)
 
-    val_batch = config['eval_batch_size'] if config['dataset']['reduced'] else config['batch_size']
-    
-    trainloader, _ , _  = load_dataset(config['dataset']['name'], 
+    trainloader, testloader , validloader  = load_dataset(config['dataset']['name'], 
                                            config['batch_size'], 
-                                           num_workers = 4, 
-                                           reduced = config['dataset']['reduced'],
-                                           ex_4_class = config['dataset']['ex_4_class'])
-    
-    _ , _ , validloader = load_dataset(config['dataset']['name'], 
-                                           val_batch, 
-                                           num_workers = 4, 
-                                           reduced = config['dataset']['reduced'],
-                                           ex_4_class = config['dataset']['ex_4_class'])
-    
-    _ , testloader, _   = load_dataset(config['dataset']['name'], 
-                                           config['eval_batch_size'], 
                                            num_workers = 4, 
                                            reduced = config['dataset']['reduced'],
                                            ex_4_class = config['dataset']['ex_4_class'])

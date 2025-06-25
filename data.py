@@ -1,5 +1,6 @@
 from cub2011 import Cub2011
 from aircraft import Aircraft
+from collections import Counter
 from cars import StanfordCars
 import torch.utils.data as data
 from torchvision import datasets, transforms
@@ -68,7 +69,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
     # test = torch.utils.data.Subset(test, np.arange(1000)[:100])
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar100'])} 
@@ -83,7 +84,7 @@ def load_cifar100(batch_size, num_workers, reduced=False, ex_4_class=0):
         train = torch.utils.data.Subset(train, reduced_indices)
     print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
     
     
     return trainloader, testloader, validloader
@@ -114,13 +115,12 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
     split = int(np.floor(valid_size * num_train))
     train_indices, valid_indices = indices[split:], indices[:split]
     validation = torch.utils.data.Subset(train, valid_indices)
-    train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    
+    train = torch.utils.data.Subset(train, train_indices) #25-29 examples per class
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cub'])} 
         reduced_indices = []
-        for idx in np.arange(len(train_indices)):
+        for idx in train.indices:
             label = train.dataset[idx][1]  
             if class_counts[label] < ex_4_class:
                 reduced_indices.append(idx)
@@ -130,7 +130,7 @@ def load_cub(batch_size, num_workers, reduced=False, ex_4_class=0):
         train = torch.utils.data.Subset(train, reduced_indices)
     print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
     
     return trainloader, testloader, validloader
     
@@ -164,7 +164,7 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
     train_indices, valid_indices = indices[split:], indices[:split]
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['aircraft'])} 
@@ -177,8 +177,9 @@ def load_aircraft(batch_size, num_workers, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
     
     return trainloader, testloader, validloader
     
@@ -210,7 +211,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
     train_indices, valid_indices = indices[split:], indices[:split]
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cars'])} 
@@ -224,7 +225,7 @@ def load_cars(batch_size, num_workers, reduced=False, ex_4_class=0):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
     
     return trainloader, testloader, validloader
     
@@ -253,7 +254,7 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     train_indices, valid_indices = indices[:split], indices[split:]
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
     
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['mnist'])} 
@@ -267,7 +268,7 @@ def load_MNIST(batch_size, num_workers=0, reduced=False, ex_4_class=0):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
     
     return trainloader, testloader, validloader
     
@@ -297,7 +298,7 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
     train_indices, valid_indices = indices[split:], indices[:split]
     validation = torch.utils.data.Subset(train, valid_indices)
     train = torch.utils.data.Subset(train, train_indices)
-    validloader = data.DataLoader(validation, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
+    validloader = data.DataLoader(validation, batch_size=256, num_workers=num_workers, shuffle = True, drop_last=False)
 
     if reduced:
         class_counts = {i: 0 for i in range(DATASET_N_CLASSES['cifar10'])} 
@@ -310,8 +311,8 @@ def load_cifar10(batch_size, num_workers=0, reduced=False, ex_4_class=0):
             if all(count >= ex_4_class for count in class_counts.values()):
                 break
         train = torch.utils.data.Subset(train, reduced_indices)
-
+    print('check train size:', len(train))
     trainloader = data.DataLoader(train, batch_size=batch_size, num_workers=num_workers, shuffle = True, drop_last=False)
-    testloader = data.DataLoader(test, batch_size=batch_size, num_workers=num_workers)
+    testloader = data.DataLoader(test, batch_size=256, num_workers=num_workers)
 
     return trainloader, testloader, validloader

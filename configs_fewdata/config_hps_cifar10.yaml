@@ -2,10 +2,10 @@ device: "cuda"
 dataset: 
     name: "cifar10"
     reduced: true
-    ex_4_class: 5
+    ex_4_class: 15
 output_dim: 10
 batch_size: 2
-eval_batch_size: 512
+
 epochs: 200
 seed: 42
 model: "resnet18"
@@ -15,8 +15,8 @@ lam: 1.0
 patience: 10
 optimizer:
     name: "radam"
-    learning_rate: 0.1
-    weight_decay: 0.0005
+    learning_rate: 0.0003
+    weight_decay: 0.0003
     momentum: 0.9
 lr_scheduler:
     steps:

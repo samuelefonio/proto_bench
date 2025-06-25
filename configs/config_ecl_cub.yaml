@@ -2,9 +2,10 @@ device: "cuda"
 dataset: 
     name: "cub"
     reduced: false
-    ex_4_class: 50
+    ex_4_class: 15
 output_dim: 200
 batch_size: 64
+
 epochs: 200
 seed: 117
 model: "resnet18"
