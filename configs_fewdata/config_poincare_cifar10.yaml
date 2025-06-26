@@ -12,7 +12,7 @@ temperature: 0.1
 geometry: "poincare"
 patience: 10
 optimizer:
-    name: "rsgd"
+    name: "radam"
     learning_rate: 0.0003
     weight_decay: 0.0003
     momentum: 0.9
