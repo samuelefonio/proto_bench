@@ -268,7 +268,7 @@ def get_OOD(model, config):
     results = {datasets_list[i]: 0 for i in range(len(datasets_list))}   
     # torch.cuda.mem_get_info()
     for test_set in datasets_list:
-        _, test_loader, _ = load_dataset(test_set, 512, num_workers = 8)
+        _, test_loader, _ = load_dataset(test_set, 128, num_workers = 4)
         confidence_avg, confidence_std  = OOD(model, config['device'], test_loader)
         results[test_set] = (confidence_avg, confidence_std)
 
