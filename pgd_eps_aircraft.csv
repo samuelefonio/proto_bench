@@ -1,0 +1,93 @@
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+\definecolor{cbblue}{HTML}{0072B2}
+\definecolor{cborange}{HTML}{E69F00}
+\definecolor{cbvermillion}{HTML}{D55E00}
+\definecolor{cbgreen}{HTML}{009E73}
+\definecolor{cbpurple}{HTML}{CC79A7}
+
+\begin{axis}[
+    width=\columnwidth,
+    height=5.5cm,
+    ylabel={Accuracy (\%)},
+    xtick={0.5,1.5,2.5,3.5},
+    xticklabels={$\epsilon_0$, $\epsilon_1$, $\epsilon_2$, $\epsilon_3$},
+    ymin=60, ymax=102,
+    xmajorgrids=true,
+    ymajorgrids=true,
+    grid style={dashed,gray!30},
+    legend style={font=\scriptsize, at={(1.0,1.0)}, anchor=north east,legend columns=2, fill=white, draw=none},
+    error bars/y explicit,
+    error bars/y dir=both,
+]
+
+% ecl
+\addplot+[
+    color=cbblue,
+    mark=o,
+    mark options={solid},
+    line width=0.7pt,
+    error bars/.cd,
+        y dir=both, y explicit,
+] coordinates {
+    (0.5,94.78) +- (0,0.19)
+    (1.5,91.02) +- (0,0.28)
+    (2.5,83.56) +- (0,0.76)
+    (3.5,64.78) +- (0,0.93)
+};
+\addlegendentry{ECL}
+
+% hps
+\addplot+[
+    color=cborange,
+    mark=o,
+    mark options={solid},
+    line width=0.7pt,
+    error bars/.cd,
+        y dir=both, y explicit,
+] coordinates {
+    (0.5,94.68) +- (0,0.12)
+    (1.5,90.61) +- (0,0.16)
+    (2.5,83.27) +- (0,0.35)
+    (3.5,64.46) +- (0,1.15)
+};
+\addlegendentry{HPS}
+
+% lor
+\addplot+[
+    color=cbgreen,
+    mark=o,
+    mark options={solid},
+    line width=0.7pt,
+    error bars/.cd,
+        y dir=both, y explicit,
+] coordinates {
+    (0.5,93.69) +- (0,0.08)
+    (1.5,92.08) +- (0,0.09)
+    (2.5,90.20) +- (0,0.21)
+    (3.5,85.73) +- (0,0.39)
+};
+\addlegendentry{LOR}
+
+% poin
+\addplot+[
+    color=cbpurple,
+    mark=o,
+    mark options={solid},
+    line width=0.7pt,
+    error bars/.cd,
+        y dir=both, y explicit,
+] coordinates {
+    (0.5,94.59) +- (0,0.17)
+    (1.5,91.05) +- (0,0.54)
+    (2.5,83.25) +- (0,0.26)
+    (3.5,63.40) +- (0,1.79)
+};
+\addlegendentry{POI}
+
+\end{axis}
+\end{tikzpicture}
+    \caption{Adversarial robustness (PGD) on CIFAR10 across different geometries}
+    \label{fig:pgd_cifar10}
+\end{figure}

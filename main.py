@@ -270,17 +270,17 @@ if __name__ == "__main__":
             "test_f1": test_f1,
             "test_recall": test_recall})
     
-    test_FGSM, test_PGD = get_robustness(testloader, model, config)
-    for i in range(len(test_FGSM)):
-        logger({"step": epoch+1+i, 
-                "test_FGSM_eps": test_FGSM[i],
-                "test_PGD_eps": test_PGD[i]})
+    # test_FGSM, test_PGD = get_robustness(testloader, model, config)
+    # for i in range(len(test_FGSM)):
+    #     logger({"step": epoch+1+i, 
+    #             "test_FGSM_eps": test_FGSM[i],
+    #             "test_PGD_eps": test_PGD[i]})
         
-    results_OOD = get_OOD(model, config)
-    for key, value in results_OOD.items():
-        logger({"step": epoch+1+i, 
-                f"confidence_{config['dataset']['name']}_on_{key}": value[0],
-                f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
+    # results_OOD = get_OOD(model, config)
+    # for key, value in results_OOD.items():
+    #     logger({"step": epoch+1+i, 
+    #             f"confidence_{config['dataset']['name']}_on_{key}": value[0],
+    #             f"confidence_std_{config['dataset']['name']}_on_{key}": value[1]})
 
     # np.save(logger.results_directory+logger.name+'.npy', test_prediction.cpu().numpy())
     # np.save(logger.results_directory+logger.name+'_tl.npy', test_tl.cpu().numpy())
