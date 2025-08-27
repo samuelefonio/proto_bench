@@ -1,0 +1,31 @@
+device: "cuda"
+dataset: 
+    name: "cifar10"
+    reduced: true
+    ex_4_class: 5
+output_dim: 10
+batch_size: 2
+epochs: 200
+seed: 42
+model: "resnet18"
+temperature: 1.0
+geometry: "lorentz"
+patience: 10
+optimizer:
+    name: "radam"
+    learning_rate: 0.0003
+    weight_decay: 0.0003
+    momentum: 0
+lr_scheduler:
+    steps:
+        - 60
+        - 120
+        - 160
+    entity: 0.2
+logger:
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "mlgroup"
+         tags: ["few_data","def"]

@@ -1,0 +1,32 @@
+device: "cuda"
+dataset: 
+    name: "aircraft"
+    reduced: true
+    ex_4_class: 30
+output_dim: 100
+batch_size: 8
+epochs: 200
+seed: 117
+model: "resnet18"
+temperature: 1
+geometry: "euclidean"
+lam: 1.0
+patience: 10
+optimizer:
+    name: "adam"
+    learning_rate: 0.0003
+    weight_decay: 0.0003
+    momentum: 0.9
+lr_scheduler:
+    steps:
+        - 60
+        - 140
+        - 160
+    entity: 0.2
+logger:
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "mlgroup"
+         tags: ["few_data","def"]

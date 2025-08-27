@@ -1,0 +1,29 @@
+device: "cpu"
+dataset: 
+    name: "mnist"
+    reduced: true
+    ex_4_class: 5
+output_dim: 8
+batch_size: 128
+epochs: 1
+seed: 42
+model: "simplecnn"
+temperature: 1.0
+geometry: "euclidean"
+patience: 5
+optimizer:
+    name: "sgd"
+    learning_rate: 0.1
+    weight_decay: 0.0001
+    momentum: 0.9
+lr_scheduler:
+    steps:
+        - 10
+        - 18
+    entity: 0.2
+logger:
+    # type: "Local"
+    type: "Wandb"
+    wandb_args:
+         project: "itadata25"
+         entity: "mlgroup"
